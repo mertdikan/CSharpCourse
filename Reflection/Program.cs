@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,11 +17,33 @@ namespace Reflection
 
             var tip = typeof(DortIslem);
 
-            DortIslem dortislem = (DortIslem)Activator.CreateInstance(tip,6,7);
-            Console.WriteLine(dortislem.Topla(4, 5));
-            Console.WriteLine(dortislem.Topla2());
+            //DortIslem dortislem = (DortIslem)Activator.CreateInstance(tip,6,7);
+            //Console.WriteLine(dortislem.Topla(4, 5));
+            //Console.WriteLine(dortislem.Topla2());
 
+            var instance = Activator.CreateInstance(tip, 6, 5);
 
+            MethodInfo methodInfo = instance.GetType().GetMethod("Topla2");
+            Console.WriteLine(methodInfo.Invoke(instance, null));
+
+            Console.WriteLine("----------------------------------------");
+            var metodlar = tip.GetMethods();
+
+            foreach (var info in metodlar)
+            {
+                Console.WriteLine("Metod adı: {0}",info.Name);
+                foreach (var parameterInfo in info.GetParameters())
+                {
+                    Console.WriteLine("Parametre: {0}", parameterInfo.Name);
+                }
+
+                foreach (var attribute in info.GetCustomAttributes())
+                {
+                    Console.WriteLine("Attribute Name: {0}",attribute.GetType().Name);
+                }
+            }
+
+            //Console.WriteLine(instance.GetType().GetMethod("Topla2").Invoke(instance, null));
 
             Console.ReadLine();
         }
@@ -54,10 +77,19 @@ namespace Reflection
             {
                 return _sayi1 + _sayi2;
             }
-
+            [MetodName("Carpma")]
             public int Carp2()
             {
                 return _sayi1 * _sayi2;
+            }
+
+        }
+
+        class MetodNameAttribute: Attribute
+        {
+            public MetodNameAttribute(string name)
+            {
+
             }
 
         }
